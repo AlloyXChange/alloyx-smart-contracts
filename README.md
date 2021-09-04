@@ -1,1 +1,1 @@
-# Smart Contracst for AlloyX
+# Smart Contracts for AlloyX

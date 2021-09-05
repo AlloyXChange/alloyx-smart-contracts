@@ -68,7 +68,7 @@ All contracts use the open source AccessControl library provided by OpenZeppelin
 
 ## Contract Deployment
 
-First run `npm install` and configure your deployment address as env vars.
+First run `npm install` and configure your deployment addresses as env vars.
 
 **Source Network**
 

@@ -25,7 +25,7 @@ A vault operator starts by selecting which type of vault they would like:
 
     - The vault holder is incentivized to process redemptions due to their receipt of reward tokens (ALLOYX). The rewards are not available to the vault creator until all token holders are marked eligible.
 
-## The following features are shared across both vault types:
+## Core Features:
 
 **Whitelisted Token Holders**
 

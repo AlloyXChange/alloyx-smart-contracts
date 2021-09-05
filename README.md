@@ -1,5 +1,4 @@
 # Smart Contracts for AlloyX
-<<<<<<< HEAD
 
 ## Summary
 
@@ -88,5 +87,3 @@ For deployment to a destination network, such as Celo use the following commands
 `truffle migrate -f 6 --to 6 --network alfajores`
 
 This will deploy a DestinationTokenFactory and DestinationBondToken.
-=======
->>>>>>> 18a2cf033eda71cb2b8d9aa1c2463cb4763bbd87

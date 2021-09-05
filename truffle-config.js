@@ -16,6 +16,7 @@ const PrivateKeyProvider = require("truffle-privatekey-provider");
 let ethPrivateKey;
 async function start() {
   ethPrivateKey = await getEthAccount();
+
   await awaitWrapper();
 }
 
@@ -40,7 +41,6 @@ module.exports = {
    */
   contracts_build_directory: path.join(__dirname, "src/contracts"),
   networks: {
-   
     ropsten: {
       provider: () =>
         new PrivateKeyProvider(
@@ -75,7 +75,6 @@ module.exports = {
       provider: prodKit.web3.currentProvider,
       network_id: 42220,
     },
-
   },
 
   // Set default mocha options here, use special reporters etc.
@@ -91,8 +90,8 @@ module.exports = {
       settings: {
         // See the solidity docs for advice about optimization and evmVersion
         optimizer: {
-          enabled: false,
-          runs: 200,
+          enabled: true,
+          runs: 2000,
         },
         evmVersion: "byzantium",
       },

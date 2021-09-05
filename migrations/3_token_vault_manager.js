@@ -1,4 +1,4 @@
-var tokenVaultMgr = artifacts.require("TokenVaultManager");
+var tokenVaultMgr = artifacts.require("TokenVaultFactory");
 
 module.exports = function (deployer) {
   // deployment steps

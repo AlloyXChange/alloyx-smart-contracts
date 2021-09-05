@@ -1,4 +1,4 @@
-var destManager = artifacts.require("DesinationTokenManager");
+var destManager = artifacts.require("DesinationTokenFactory");
 var destToken = artifacts.require("DestinationBondToken");
 
 module.exports = function (deployer) {

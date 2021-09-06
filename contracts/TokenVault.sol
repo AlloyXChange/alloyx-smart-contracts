@@ -103,23 +103,26 @@ contract TokenVault is AccessControl {
   }
 
   function approveRedemption(
-    address user,
+    address[] memory users,
     address rewardToken,
     uint256 amount
   ) public {
     require(hasRole(VAULT_OPERATOR, msg.sender), "Not a operator");
     require(block.timestamp > maturity, "Not at maturity");
 
-    for (uint256 i = 0; i < stableCoins.length; i++) {
-      address rToken = stableCoins[i];
-      if (rToken == rewardToken) {
-        RedemptionRecord memory newRecord = RedemptionRecord(
-          stableCoins[i],
-          user,
-          amount,
-          "pending"
-        );
-        redemptionRecordList.push(newRecord);
+    for (uint256 z = 0; z < users.length; z++) {
+      address user = users[z];
+      for (uint256 i = 0; i < stableCoins.length; i++) {
+        address rToken = stableCoins[i];
+        if (rToken == rewardToken) {
+          RedemptionRecord memory newRecord = RedemptionRecord(
+            stableCoins[i],
+            user,
+            amount,
+            "pending"
+          );
+          redemptionRecordList.push(newRecord);
+        }
       }
     }
   }

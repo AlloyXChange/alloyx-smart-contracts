@@ -114,25 +114,32 @@ contract DestinationBondToken is ERC20, AccessControl {
     return "no record";
   }
 
-  function startRedeem(uint256 amount, address forUser) external {
-    require(block.timestamp > vaultMaturity, "Not at maturity");
-    require(hasRole(VALT_OPERATOR, msg.sender), "Not a operator");
-
+  function startRedeem(uint256 amount, address forUser) private {
     _burn(forUser, amount);
     redemptionLookup[forUser] += amount;
   }
 
-  function approveRedemption(
-    address user,
-    address rewardToken,
-    uint256 amount
-  ) public {
+  function batchStartRedeem() public {
+    require(block.timestamp > vaultMaturity, "Not at maturity");
+    require(hasRole(VALT_OPERATOR, msg.sender), "Not a operator");
+
+    for (uint256 i = 0; i < tokenHolders.length; i++) {
+      address user = tokenHolders[i];
+      uint256 amount = balanceOf(user);
+      startRedeem(amount, user);
+    }
+  }
+
+  function approveRedemption() public {
     require(hasRole(VALT_OPERATOR, msg.sender), "Not a operator");
     require(block.timestamp > vaultMaturity, "Not at maturity");
 
-    for (uint256 i = 0; i < stableCoins.length; i++) {
-      address rToken = stableCoins[i];
-      if (rToken == rewardToken) {
+    for (uint256 z = 0; z < tokenHolders.length; z++) {
+      address user = tokenHolders[z];
+
+      for (uint256 i = 0; i < stableCoins.length; i++) {
+        address rToken = stableCoins[i];
+        uint256 amount = ERC20(rToken).balanceOf(user);
         RedemptionRecord memory newRecord = RedemptionRecord(
           stableCoins[i],
           user,

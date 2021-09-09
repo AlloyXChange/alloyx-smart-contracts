@@ -12,7 +12,7 @@ contract TokenVault is AccessControl {
   ERC20 public tokenContract;
   address public vaultOwner;
 
-  bytes32 public constant VAULT_OPERATOR = keccak256("VAULT_OPERATOR");
+  bytes32 public constant VALT_OPERATOR = keccak256("VALT_OPERATOR");
   bytes32 public constant ADMIN = keccak256("ADMIN");
 
   struct RedemptionRecord {
@@ -60,12 +60,10 @@ contract TokenVault is AccessControl {
     tokenContract = ERC20(token);
     vaultOwner = contractCreator;
     isWithdrawEnabled = false;
-
-    _setupRole(VAULT_OPERATOR, admin);
-    _setupRole(ADMIN, admin);
-    _setupRole(VAULT_OPERATOR, msg.sender);
-
-    grantRole(ADMIN, msg.sender);
+    _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
+    grantRole(VALT_OPERATOR, msg.sender);
+    grantRole(VALT_OPERATOR, vaultOwner);
+    grantRole(ADMIN, admin);
   }
 
   function getStableCoins() public view returns (address[] memory) {
@@ -103,26 +101,23 @@ contract TokenVault is AccessControl {
   }
 
   function approveRedemption(
-    address[] memory users,
+    address user,
     address rewardToken,
     uint256 amount
   ) public {
-    require(hasRole(VAULT_OPERATOR, msg.sender), "Not a operator");
+    require(hasRole(VALT_OPERATOR, msg.sender), "Not a operator");
     require(block.timestamp > maturity, "Not at maturity");
 
-    for (uint256 z = 0; z < users.length; z++) {
-      address user = users[z];
-      for (uint256 i = 0; i < stableCoins.length; i++) {
-        address rToken = stableCoins[i];
-        if (rToken == rewardToken) {
-          RedemptionRecord memory newRecord = RedemptionRecord(
-            stableCoins[i],
-            user,
-            amount,
-            "pending"
-          );
-          redemptionRecordList.push(newRecord);
-        }
+    for (uint256 i = 0; i < stableCoins.length; i++) {
+      address rToken = stableCoins[i];
+      if (rToken == rewardToken) {
+        RedemptionRecord memory newRecord = RedemptionRecord(
+          stableCoins[i],
+          user,
+          amount,
+          "pending"
+        );
+        redemptionRecordList.push(newRecord);
       }
     }
   }
@@ -156,7 +151,7 @@ contract TokenVault is AccessControl {
   }
 
   function depositIntoStableCoin(address rewardToken, uint256 amount) public {
-    require(hasRole(VAULT_OPERATOR, msg.sender), "Not a operator");
+    require(hasRole(VALT_OPERATOR, msg.sender), "Not a operator");
 
     address from = msg.sender;
 
@@ -214,7 +209,7 @@ contract TokenVault is AccessControl {
   }
 
   function deposit(uint256 amount) external {
-    require(hasRole(VAULT_OPERATOR, msg.sender), "Not a operator");
+    require(hasRole(VALT_OPERATOR, msg.sender), "Not a operator");
     address from = msg.sender;
     tokenContract.transferFrom(from, address(this), amount);
     primaryTokenSupply = tokenContract.balanceOf(address(this));
@@ -224,7 +219,7 @@ contract TokenVault is AccessControl {
 
   function withdraw(uint256 amount) external {
     require(isWithdrawEnabled == true, "Withdraw not enabled");
-    require(hasRole(VAULT_OPERATOR, msg.sender), "Not a operator");
+    require(hasRole(VALT_OPERATOR, msg.sender), "Not a operator");
 
     address from = msg.sender;
     tokenContract.approve(from, amount);

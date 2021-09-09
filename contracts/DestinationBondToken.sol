@@ -126,20 +126,23 @@ contract DestinationBondToken is ERC20, AccessControl {
     for (uint256 i = 0; i < tokenHolders.length; i++) {
       address user = tokenHolders[i];
       uint256 amount = balanceOf(user);
-      startRedeem(amount, user);
+      if (amount > 0) {
+        startRedeem(amount, user);
+      }
     }
   }
 
-  function approveRedemption() public {
+  function approveRedemption(
+    address user,
+    address rewardToken,
+    uint256 amount
+  ) public {
     require(hasRole(VALT_OPERATOR, msg.sender), "Not a operator");
     require(block.timestamp > vaultMaturity, "Not at maturity");
 
-    for (uint256 z = 0; z < tokenHolders.length; z++) {
-      address user = tokenHolders[z];
-
-      for (uint256 i = 0; i < stableCoins.length; i++) {
-        address rToken = stableCoins[i];
-        uint256 amount = ERC20(rToken).balanceOf(user);
+    for (uint256 i = 0; i < stableCoins.length; i++) {
+      address rToken = stableCoins[i];
+      if (rToken == rewardToken) {
         RedemptionRecord memory newRecord = RedemptionRecord(
           stableCoins[i],
           user,
@@ -222,12 +225,11 @@ contract DestinationBondToken is ERC20, AccessControl {
       }
     }
 
-    for (uint256 i = 0; i < stableCoins.length; i++) {
-      address rToken = stableCoins[i];
-      address rTokenAddress = stableCoins[i];
-      if (rewardToken == rTokenAddress) {
-        ERC20(rToken).approve(from, redeemAmount);
-        ERC20(rToken).transfer(from, redeemAmount);
+    for (uint256 p = 0; p < stableCoins.length; p++) {
+      address rToken = stableCoins[p];
+      if (rewardToken == rToken) {
+        ERC20(rToken).approve(tokenHolder, redeemAmount);
+        ERC20(rToken).transfer(tokenHolder, redeemAmount);
       }
     }
 

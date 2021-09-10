@@ -67,25 +67,51 @@ contract TokenVault is AccessControl {
     grantRole(ADMIN, admin);
   }
 
+  /**
+   * @notice Get the stable coins
+   * @return All of the stable coins
+   *
+   */
   function getStableCoins() public view returns (address[] memory) {
     return stableCoins;
   }
 
+  /**
+   * @notice Adds a stable coin, must be a vault owner
+   * @param newToken Add a new token to the redemption pool
+   *
+   */
   function addToStableCoins(address newToken) public {
     require(vaultOwner == msg.sender, "Not an Owner");
     stableCoins.push(newToken);
   }
 
+  /**
+   * @notice Get the ERC20 of the source primary token
+   * @return ERC20 for the primary token
+   *
+   */
   function getERC20Address() public view returns (ERC20) {
     return tokenContract;
   }
 
+  /**
+   * @notice Enables withdrawal, only admins can perform this task
+   * @param value The state for withdrawal
+   *
+   */
   function updateWithrawEnabled(bool value) public {
     require(hasRole(ADMIN, msg.sender), "Not a admin");
 
     isWithdrawEnabled = value;
   }
 
+  /**
+   * @notice Gets the high amount of a deposited vault token
+   * @param rewardToken The vault token for which you're querying
+   * @return The amount of tokens deposited
+   *
+   */
   function getTokenVaultBalance(address rewardToken)
     public
     view
@@ -101,6 +127,13 @@ contract TokenVault is AccessControl {
     return highAmount;
   }
 
+  /**
+   * @notice Approves redemption for a given user. Stores the record in a struct.
+   * @param user The end user who is a token holder
+   * @param rewardToken Token they will redeem
+   * @param amount The amount available
+   *
+   */
   function approveRedemption(
     address user,
     address rewardToken,
@@ -123,6 +156,13 @@ contract TokenVault is AccessControl {
     }
   }
 
+  /**
+   * @notice Read the redemption records for available amount by token end user
+   * @param user The end user who is a token holder
+   * @param rewardToken Token they will redeem
+   * @return The amount they have available
+   *
+   */
   function getRedemptionAmount(address rewardToken, address user)
     public
     view
@@ -137,6 +177,13 @@ contract TokenVault is AccessControl {
     return 0;
   }
 
+  /**
+   * @notice Read the redemption status for a token end user
+   * @param user The end user who is a token holder
+   * @param rewardToken Token they will redeem
+   * @return The current record status
+   *
+   */
   function getRedemptionStatus(address rewardToken, address user)
     public
     view
@@ -151,6 +198,12 @@ contract TokenVault is AccessControl {
     return "no record";
   }
 
+  /**
+   * @notice Deposit into the stable coin reserve
+   * @param rewardToken Token they will deposit
+   * @param amount The amount the will deposit
+   *
+   */
   function depositIntoStableCoin(address rewardToken, uint256 amount) public {
     require(hasRole(VALT_OPERATOR, msg.sender), "Not a operator");
 
@@ -169,6 +222,12 @@ contract TokenVault is AccessControl {
     depositRecordList.push(newRecord);
   }
 
+  /**
+   * @notice Redeem from the source stable coins reserve
+   * @param rewardToken Token they will redeem
+   * @param tokenHolder The token holder address
+   *
+   */
   function redeemFromStableCoin(address rewardToken, address tokenHolder)
     public
   {
@@ -209,6 +268,11 @@ contract TokenVault is AccessControl {
     }
   }
 
+  /**
+   * @notice Deposit a primary token into the contract
+   * @param amount How much they will deposit.
+   *
+   */
   function deposit(uint256 amount) external {
     require(hasRole(VALT_OPERATOR, msg.sender), "Not a operator");
     address from = msg.sender;
@@ -218,6 +282,11 @@ contract TokenVault is AccessControl {
     emit Deposit(from);
   }
 
+  /**
+   * @notice Withdraw primary tokens
+   * @param amount How much they will withdraw.
+   *
+   */
   function withdraw(uint256 amount) external {
     require(isWithdrawEnabled == true, "Withdraw not enabled");
     require(hasRole(VALT_OPERATOR, msg.sender), "Not a operator");

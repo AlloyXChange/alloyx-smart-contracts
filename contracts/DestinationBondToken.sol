@@ -63,26 +63,53 @@ contract DestinationBondToken is ERC20, AccessControl {
     _mint(sender, supply * (10**uint256(decimals())));
   }
 
+  /**
+   * @notice Update the IPFS hash on the destination contract
+   * @param newData A string representing the hash
+   *
+   */
   function updateContractMetadata(string memory newData) public {
     require(hasRole(VALT_OPERATOR, msg.sender), "Not a operator");
     contractMetadata = newData;
   }
 
+  /**
+   * @notice Turn on whitelisting for token holders
+   * @param newValue A boolean
+   *
+   */
   function enableWhitelist(uint256 newValue) public {
     require(hasRole(VALT_OPERATOR, msg.sender), "Not a operator");
     isWhitelistEnabled = newValue;
   }
 
+  /**
+   * @notice Check for state on whitelisting
+   * @return Is it enabled?
+   *
+   */
   function checkWhitelist() public view returns (uint256) {
     return isWhitelistEnabled;
   }
 
+  /**
+   * @notice Initial mint of destination token
+   * @param to Who will receive the initial tokens, the vault creator
+   * @param amount The amount of tokens to mint
+   *
+   */
   function mint(address to, uint256 amount) public {
     // require that the requester have the role of Minter
     require(hasRole(MINTER_ROLE, msg.sender), "Not a minter");
     _mint(to, amount * (10**uint256(decimals())));
   }
 
+  /**
+   * @notice Check how many tokens the holder has redeemed
+   * @param user The token holder
+   * @return How much they've redeemed
+   *
+   */
   function getRedemptionAvailableForUser(address user)
     public
     view
@@ -91,6 +118,13 @@ contract DestinationBondToken is ERC20, AccessControl {
     return redemptionLookup[user];
   }
 
+  /**
+   * @notice Read the redemption records for available amount by token end user
+   * @param user The end user who is a token holder
+   * @param rewardToken Token they will redeem
+   * @return The amount they have available
+   *
+   */
   function getRedemptionAmount(address rewardToken, address user)
     public
     view
@@ -105,6 +139,13 @@ contract DestinationBondToken is ERC20, AccessControl {
     return 0;
   }
 
+  /**
+   * @notice Read the redemption status for a token end user
+   * @param user The end user who is a token holder
+   * @param rewardToken Token they will redeem
+   * @return The current record status
+   *
+   */
   function getRedemptionStatus(address rewardToken, address user)
     public
     view
@@ -119,11 +160,21 @@ contract DestinationBondToken is ERC20, AccessControl {
     return "no record";
   }
 
+  /**
+   * @notice Burn the tokens and mark them ready for redemption
+   * @param amount The amount to burn
+   * @param forUser The token holder
+   *
+   */
   function startRedeem(uint256 amount, address forUser) private {
     _burn(forUser, amount);
     redemptionLookup[forUser] += amount;
   }
 
+  /**
+   * @notice Batch function for processing redemptions
+   *
+   */
   function batchStartRedeem() public {
     require(block.timestamp > vaultMaturity, "Not at maturity");
     require(hasRole(VALT_OPERATOR, msg.sender), "Not a operator");
@@ -137,6 +188,13 @@ contract DestinationBondToken is ERC20, AccessControl {
     }
   }
 
+  /**
+   * @notice Approves redemption for a given user. Stores the record in a struct.
+   * @param user The end user who is a token holder
+   * @param rewardToken Token they will redeem
+   * @param amount The amount available
+   *
+   */
   function approveRedemption(
     address user,
     address rewardToken,
@@ -159,24 +217,45 @@ contract DestinationBondToken is ERC20, AccessControl {
     }
   }
 
-  function markRedeemed(uint256 amount, address account) external {
-    require(hasRole(VALT_OPERATOR, msg.sender), "Not a operator");
-    redemptionLookup[account] -= amount;
-  }
+  // function markRedeemed(uint256 amount, address account) external {
+  //   require(hasRole(VALT_OPERATOR, msg.sender), "Not a operator");
+  //   redemptionLookup[account] -= amount;
+  // }
 
+  /**
+   * @notice Get the stable coins
+   * @return All of the stable coins
+   *
+   */
   function getStableCoins() public view returns (address[] memory) {
     return stableCoins;
   }
 
+  /**
+   * @notice Get the token holders
+   * @return All of the token holders
+   *
+   */
   function getTokenHolders() public view returns (address[] memory) {
     return tokenHolders;
   }
 
+  /**
+   * @notice Adds a stable coin, must be a vault owner
+   * @param newToken Add a new token to the redemption pool
+   *
+   */
   function addToStableCoins(address newToken) public {
     require(hasRole(VALT_OPERATOR, msg.sender), "Not a operator");
     stableCoins.push(newToken);
   }
 
+  /**
+   * @notice Gets the high amount of a deposited vault token
+   * @param rewardToken The vault token for which you're querying
+   * @return The amount of tokens deposited
+   *
+   */
   function getTokenVaultBalance(address rewardToken)
     public
     view
@@ -192,6 +271,12 @@ contract DestinationBondToken is ERC20, AccessControl {
     return highAmount;
   }
 
+  /**
+   * @notice Deposit into the stable coin reserve
+   * @param rewardToken Token they will deposit
+   * @param amount The amount the will deposit
+   *
+   */
   function depositIntoStableCoin(address rewardToken, uint256 amount) public {
     require(hasRole(VALT_OPERATOR, msg.sender), "Not a operator");
     address from = msg.sender;
@@ -209,6 +294,12 @@ contract DestinationBondToken is ERC20, AccessControl {
     depositRecordList.push(newRecord);
   }
 
+  /**
+   * @notice Redeem from the destination stable coins reserve
+   * @param rewardToken Token they will redeem
+   * @param tokenHolder The token holder address
+   *
+   */
   function redeemFromStableCoin(address rewardToken, address tokenHolder)
     public
   {

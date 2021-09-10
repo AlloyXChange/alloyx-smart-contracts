@@ -1,12 +1,13 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
+// ============ External Imports ============
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/access/AccessControl.sol";
 
 /**
- * @title TokenReceiver
- * @dev The source network vault that holds all deposits on the source chain. This vault manages deposits and redemptions for source network deposits.
+ * @title TokeVault
+ * @notice The source network vault that holds all deposits on the source chain. This vault manages deposits and redemptions for source network deposits.
  */
 contract TokenVault is AccessControl {
   ERC20 public tokenContract;

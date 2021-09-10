@@ -1,7 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
+// ============ Internal Imports ============
 import "./TokenVault.sol";
+
+// ============ External Imports ============
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/access/AccessControl.sol";
 
@@ -15,11 +18,7 @@ contract TokenVaultFactory is AccessControl {
   bytes32 public constant ADMIN = keccak256("ADMIN");
 
   /**
-   * @dev Constructor, provide Admin role to contract deployer
-   *
-
-   * Requirements:
-   *
+   * @notice Constructor, provide Admin role to contract deployer
    */
   constructor() {
     _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
@@ -28,10 +27,10 @@ contract TokenVaultFactory is AccessControl {
   }
 
   /**
-   * @dev Given a wallet address, what are the associated vaults
+   * @notice Given a wallet address, what are the associated vaults
    *
-
-   * Requirements:
+   * @param user address of the user in the lookup.
+   * @return All of the vaults for a given user
    *
    */
 
@@ -44,10 +43,9 @@ contract TokenVaultFactory is AccessControl {
   }
 
   /**
-   * @dev Get a list of all the vaults
+   * @notice Given a wallet address, what are the associated vaults
    *
-
-   * Requirements:
+   * @return All of the vaults
    *
    */
   function getAllVaults() public view returns (address[] memory) {
@@ -55,11 +53,10 @@ contract TokenVaultFactory is AccessControl {
   }
 
   /**
-   * @dev Check if the user address already has a vault with the same token
-   *
-   * TODO: check for expired vaults
-
-   * Requirements:
+   * @notice Check if a vault exists
+   * @param erc20Address The primary token
+   * @param userAddress address of the user in the lookup.
+   * @return BOOL describing whether or not the vault exists
    *
    */
   function vaultExists(address erc20Address, address userAddress)
@@ -80,11 +77,12 @@ contract TokenVaultFactory is AccessControl {
   }
 
   /**
-   * @dev Create a new vault and store it in the registry
+   * @notice Check if a vault exists
+   * @param newToken The primary token
+   * @param maturity When will redemption be made available
+   * @param yield The yield of the underlying asset
+   * @param contractCreator Address of the vault creator
    *
-
-   * Requirements:
-   * No existing vaults for that user
    */
   function createVault(
     address newToken,
@@ -102,11 +100,9 @@ contract TokenVaultFactory is AccessControl {
   }
 
   /**
-   * @dev Remove vault from registry, 
+   * @notice Removes a vault from the factory lookup. Only admins can perform this task.
+   * @param erc20Address The primary token
    *
-
-   * Requirements:
-   * must be and admin and vault must exist
    */
   function destroyVault(address erc20Address) public {
     address userAddress = msg.sender;

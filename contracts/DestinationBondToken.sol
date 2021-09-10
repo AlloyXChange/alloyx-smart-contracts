@@ -1,9 +1,14 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
+// ============ External Imports ============
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/access/AccessControl.sol";
 
+/**
+ * @title DestinationBondToken
+ * @notice The destination network vault that holds all deposits on the destination chain. This vault is the tradeable ERC20 and it manages deposits and redemptions for source network deposits.
+ */
 contract DestinationBondToken is ERC20, AccessControl {
   address[] tokenHolders;
 

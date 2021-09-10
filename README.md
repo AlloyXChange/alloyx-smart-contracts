@@ -87,3 +87,7 @@ For deployment to a destination network, such as Celo use the following commands
 `truffle migrate -f 6 --to 6 --network alfajores`
 
 This will deploy a DestinationTokenFactory and DestinationBondToken.
+
+# Coming Soon
+
+We are excited to integrate a cross-chain messaging system which will allow the same vault to live on multiple chains. This will remove the dependency on the vault creator to process redemptions and deliver on a trustless protocol.

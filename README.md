@@ -25,25 +25,28 @@ A vault operator starts by selecting which type of vault they would like:
 
     - The vault holder is incentivized to process redemptions due to their receipt of reward tokens (ALLOYX). The rewards are not available to the vault creator until all token holders are marked eligible.
 
-## Front End Example
+## Front End Implementation
 
-We have deployed a front end implementation for these smart contracts here:
+We have deployed a front end implementation for these smart contracts here: https://github.com/AlloyXChange/alloyx-frontend
 
 In the AlloyX front you can do the following:
 
 **Create Vaults**
 
 In this screen we allow for the creation of vaults and a high level view of existing vaults.
+
 ![alt text](https://storage.googleapis.com/cauris_deep_dive/alloyx_vault.png)
 
 **Edit Vaults**
 
 Here, vault creators can deposit their tokens as well as publish to the destination chain.
+
 ![alt text](https://storage.googleapis.com/cauris_deep_dive/alloyx_edit.png)
 
 **Redeem Vault Tokens**
 
 Token holders can redeem their vault tokens at maturity in our redemption portal.
+
 ![alt text](https://storage.googleapis.com/cauris_deep_dive/alloyx_redeem.png)
 
 ## Core Features:

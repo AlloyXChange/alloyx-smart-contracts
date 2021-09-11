@@ -25,6 +25,21 @@ A vault operator starts by selecting which type of vault they would like:
 
     - The vault holder is incentivized to process redemptions due to their receipt of reward tokens (ALLOYX). The rewards are not available to the vault creator until all token holders are marked eligible.
 
+## Front End Example
+
+We have deployed a front end implementation for these smart contracts here:
+
+In the AlloyX front you can do the following:
+
+**Create Vaults**
+![alt text](https://storage.googleapis.com/cauris_deep_dive/alloyx_vault.png)
+
+**Edit Vaults**
+![alt text](https://storage.googleapis.com/cauris_deep_dive/alloyx_edit.png)
+
+**Redeem Vault Tokens**
+![alt text](https://storage.googleapis.com/cauris_deep_dive/alloyx_redeem.png)
+
 ## Core Features:
 
 **Whitelisted Token Holders**
@@ -91,3 +106,5 @@ This will deploy a DestinationTokenFactory and DestinationBondToken.
 # Coming Soon
 
 We are excited to integrate a cross-chain messaging system which will allow the same vault to live on multiple chains. This will remove the dependency on the vault creator to process redemptions and deliver on a trustless protocol.
+
+We'll also be migrating to Hardhat and TypeChain.

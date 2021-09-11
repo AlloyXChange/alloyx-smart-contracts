@@ -2,8 +2,13 @@
 
 pragma solidity ^0.8.0;
 
+// ============ External Imports ============
 import "@openzeppelin/contracts/access/AccessControl.sol";
 
+/**
+ * @title Access
+ * @dev Control access for a given property
+ */
 contract Access is AccessControl {
   bytes32 public constant WHITELIST = keccak256("WHITELIST");
   bytes32 public constant OPERATOR = keccak256("OPERATOR");

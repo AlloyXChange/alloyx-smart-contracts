@@ -4,13 +4,19 @@ pragma solidity ^0.8.0;
 // ============ External Imports ============
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/access/AccessControl.sol";
+import "./StringsLib.sol";
+import "./Utils.sol";
 
 /**
  * @title DestinationBondToken
  * @notice The destination network vault that holds all deposits on the destination chain. This vault is the tradeable ERC20 and it manages deposits and redemptions for source network deposits.
  */
 contract DestinationBondToken is ERC20, AccessControl {
+  using StringsLib for string;
+  using Utils for *;
+
   address[] tokenHolders;
+  address[] whitelistedWallets;
 
   struct RedemptionRecord {
     address token;
@@ -57,10 +63,12 @@ contract DestinationBondToken is ERC20, AccessControl {
     vaultMaturity = maturity;
     contractMetadata = metadata;
     _setupRole(DEFAULT_ADMIN_ROLE, owner);
+    grantRole(DEFAULT_ADMIN_ROLE, sender);
     grantRole(WHITELISTED_HOLDER_ROLE, sender);
     grantRole(MINTER_ROLE, sender);
     grantRole(VALT_OPERATOR, sender);
     _mint(sender, supply * (10**uint256(decimals())));
+    whitelistedWallets.push(sender);
   }
 
   /**
@@ -90,6 +98,23 @@ contract DestinationBondToken is ERC20, AccessControl {
    */
   function checkWhitelist() public view returns (uint256) {
     return isWhitelistEnabled;
+  }
+
+  function addToWhitelist(string memory wallet) private {
+    address walletAsAddress = Utils.parseAddr(wallet);
+    grantRole(WHITELISTED_HOLDER_ROLE, walletAsAddress);
+    if (!Utils.hasAddressInArray(walletAsAddress, whitelistedWallets)) {
+      whitelistedWallets.push(walletAsAddress);
+    }
+  }
+
+  function batchAddToWhitelist(string memory addresses) public {
+    require(hasRole(VALT_OPERATOR, msg.sender), "Not a operator");
+    string[] memory list = addresses.split(",");
+    for (uint256 i = 0; i < list.length; i++) {
+      string memory wallet = list[i];
+      addToWhitelist(wallet);
+    }
   }
 
   /**
@@ -241,6 +266,15 @@ contract DestinationBondToken is ERC20, AccessControl {
   }
 
   /**
+   * @notice Get the whitelisted wallets
+   * @return All of the whitelisted wallets
+   *
+   */
+  function getWhitelist() public view returns (address[] memory) {
+    return whitelistedWallets;
+  }
+
+  /**
    * @notice Adds a stable coin, must be a vault owner
    * @param newToken Add a new token to the redemption pool
    *
@@ -305,7 +339,6 @@ contract DestinationBondToken is ERC20, AccessControl {
   {
     require(block.timestamp > vaultMaturity, "Not at maturity");
 
-    address from = msg.sender;
     uint256 redeemAmount = 0;
     for (uint256 i = 0; i < redemptionRecordList.length; i++) {
       if (
